@@ -21,14 +21,14 @@ from habitat_baselines.common.obs_transformers import (
     get_active_obs_transforms,
 )
 from habitat_baselines.common.tensorboard_utils import TensorboardWriter
-from habitat_baselines.rl.ddppo.algo.ddp_utils import (
+from habitat_baselines.rl.ddppo.ddp_utils import (
     EXIT,
     REQUEUE,
     add_signal_handlers,
     init_distrib_slurm,
-    load_interrupted_state,
+    #load_interrupted_state,
     requeue_job,
-    save_interrupted_state,
+    #save_interrupted_state,
 )
 from habitat_baselines.rl.ppo.ppo_trainer import PPOTrainer
 from habitat_baselines.utils.common import batch_obs, linear_decay

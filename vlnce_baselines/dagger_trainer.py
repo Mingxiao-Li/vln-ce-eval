@@ -273,6 +273,11 @@ class DaggerTrainer(BaseVLNCETrainer):
         observations = extract_instruction_tokens(
             observations, self.config.TASK_CONFIG.TASK.INSTRUCTION_SENSOR_UUID
         )
+        
+        #############
+        for obs in observations:
+            obs["instruction"] = np.array(obs["instruction"])
+
         batch = batch_obs(observations, self.device)
         batch = apply_obs_transforms_batch(batch, self.obs_transforms)
 
@@ -319,7 +324,8 @@ class DaggerTrainer(BaseVLNCETrainer):
             ep_ids_collected = {
                 ep.episode_id for ep in envs.current_episodes()
             }
-
+        
+        stats_episodes = {}
         with tqdm.tqdm(
             total=self.config.IL.DAGGER.update_size, dynamic_ncols=True
         ) as pbar, lmdb.open(
@@ -381,6 +387,8 @@ class DaggerTrainer(BaseVLNCETrainer):
                                 ep_ids_collected.add(
                                     current_episodes[i].episode_id
                                 )
+                        ep_id = current_episodes[i].episode_id
+                        stats_episodes[ep_id] = infos[i]
 
                     if dones[i]:
                         episodes[i] = []
@@ -442,11 +450,13 @@ class DaggerTrainer(BaseVLNCETrainer):
                 prev_actions.copy_(actions)
 
                 outputs = envs.step([a[0].item() for a in actions])
-                observations, _, dones, _ = [list(x) for x in zip(*outputs)]
+                observations, _, dones, infos = [list(x) for x in zip(*outputs)]
                 observations = extract_instruction_tokens(
                     observations,
                     self.config.TASK_CONFIG.TASK.INSTRUCTION_SENSOR_UUID,
                 )
+                for obs in observations:
+                    obs["instruction"] = np.array(obs["instruction"])
                 batch = batch_obs(observations, self.device)
                 batch = apply_obs_transforms_batch(batch, self.obs_transforms)
 
@@ -457,6 +467,18 @@ class DaggerTrainer(BaseVLNCETrainer):
                 )
 
             txn.commit()
+        print(f"Finish dataset collection")
+        # NOTE: IL Training Metric
+        aggregated_stats = {}
+        num_episodes = len(stats_episodes)
+        for k in next(iter(stats_episodes.values())).keys():
+            if k in ["scene_id", "collisions"]:
+                continue
+            aggregated_stats[k] = (
+                sum(v[k] for v in stats_episodes.values()) / num_episodes
+            )
+        for k, v in aggregated_stats.items():
+            logger.info(f"{k}: {v:.6f}")
 
         envs.close()
         envs = None

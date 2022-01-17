@@ -21,7 +21,7 @@ from habitat_baselines.common.obs_transformers import (
     get_active_obs_transforms,
 )
 from habitat_baselines.common.tensorboard_utils import TensorboardWriter
-from habitat_baselines.rl.ddppo.algo.ddp_utils import is_slurm_batch_job
+from habitat_baselines.rl.ddppo.ddp_utils import is_slurm_batch_job
 from habitat_baselines.utils.common import batch_obs
 
 from habitat_extensions.utils import generate_video, observations_to_image
@@ -32,7 +32,7 @@ from vlnce_baselines.common.utils import extract_instruction_tokens
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     import tensorflow as tf  # noqa: F401
-
+import numpy as np
 
 class BaseVLNCETrainer(BaseILTrainer):
     """A base trainer for VLN-CE imitation learning."""
@@ -281,6 +281,9 @@ class BaseVLNCETrainer(BaseILTrainer):
         observations = extract_instruction_tokens(
             observations, self.config.TASK_CONFIG.TASK.INSTRUCTION_SENSOR_UUID
         )
+        for obs in observations:
+            obs["instruction"] = np.array(obs["instruction"])
+
         batch = batch_obs(observations, self.device)
         batch = apply_obs_transforms_batch(batch, self.obs_transforms)
 
@@ -382,6 +385,9 @@ class BaseVLNCETrainer(BaseILTrainer):
                 observations,
                 self.config.TASK_CONFIG.TASK.INSTRUCTION_SENSOR_UUID,
             )
+            for obs in observations:
+                obs["instruction"] = np.array(obs["instruction"])
+
             batch = batch_obs(observations, self.device)
             batch = apply_obs_transforms_batch(batch, self.obs_transforms)
 

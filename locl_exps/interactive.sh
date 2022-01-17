@@ -1,0 +1,1 @@
+qsub -I -A lvisualnavigation -l nodes=1:ppn=9:gpus=1:skylake -l partition=gpu -l mem=40gb -l walltime=7:00:00:00
