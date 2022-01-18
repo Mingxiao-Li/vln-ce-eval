@@ -15,7 +15,7 @@ from vlnce_baselines.models.encoders.instruction_encoder import (
     InstructionEncoder,
 )
 from vlnce_baselines.models.policy import ILPolicy
-
+import ipdb 
 
 @BaselineRegistry.register_policy
 class Seq2SeqPolicy(ILPolicy):
@@ -97,10 +97,15 @@ class Seq2SeqNet(Net):
             self.prev_action_embedding = nn.Embedding(num_actions + 1, 32)
 
         # Init the RNN state decoder
+        #rnn_input_size = (
+        #    self.instruction_encoder.output_size
+        #    + model_config.DEPTH_ENCODER.output_size
+        #    + model_config.RGB_ENCODER.output_size
+        #)
         rnn_input_size = (
             self.instruction_encoder.output_size
-            + model_config.DEPTH_ENCODER.output_size
-            + model_config.RGB_ENCODER.output_size
+            + 96
+            + 32
         )
 
         if model_config.SEQ2SEQ.use_prev_action:
@@ -116,7 +121,11 @@ class Seq2SeqNet(Net):
         self.progress_monitor = nn.Linear(
             self.model_config.STATE_ENCODER.hidden_size, 1
         )
-
+        self.rgb_down_linear = nn.Linear(model_config.RGB_ENCODER.output_size,
+                                         96)
+        
+        self.depth_down_linear = nn.Linear(model_config.DEPTH_ENCODER.output_size,
+                                           32)
         self._init_layers()
 
         self.train()
@@ -140,10 +149,14 @@ class Seq2SeqNet(Net):
         nn.init.constant_(self.progress_monitor.bias, 0)
 
     def forward(self, observations, rnn_states, prev_actions, masks):
+       
         instruction_embedding = self.instruction_encoder(observations)
         depth_embedding = self.depth_encoder(observations)
         rgb_embedding = self.rgb_encoder(observations)
-
+        
+        depth_embedding = self.depth_down_linear(depth_embedding)
+        rgb_embedding = self.rgb_down_linear(rgb_embedding)
+   
         if self.model_config.ablate_instruction:
             instruction_embedding = instruction_embedding * 0
         if self.model_config.ablate_depth:

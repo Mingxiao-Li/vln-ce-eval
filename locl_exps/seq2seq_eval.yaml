@@ -6,7 +6,7 @@ NUM_ENVIRONMENTS: 10
 TENSORBOARD_DIR: data/tensorboard_dirs/seq2seq_small
 CHECKPOINT_FOLDER: data/checkpoints/seq2seq_small
 EVAL_CKPT_PATH_DIR: data/checkpoints/seq2seq_small
-RESULTS_DIR: data/checkpoints/seq2seq/evals
+RESULTS_DIR: data/checkpoints/seq2seq_small/evals
 
 
 EVAL:

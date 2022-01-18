@@ -26,7 +26,7 @@ from vlnce_baselines.common.utils import extract_instruction_tokens
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     import tensorflow as tf  # noqa: F401
-
+import ipdb 
 
 class ObservationsDict(dict):
     def pin_memory(self):
@@ -202,7 +202,6 @@ class IWTrajectoryDataset(torch.utils.data.IterableDataset):
                 (oracle_actions[1:] != oracle_actions[:-1]).long(),
             ]
         )
-
         return (
             obs,
             prev_actions,
@@ -479,7 +478,6 @@ class DaggerTrainer(BaseVLNCETrainer):
             )
         for k, v in aggregated_stats.items():
             logger.info(f"{k}: {v:.6f}")
-
         envs.close()
         envs = None
 
@@ -570,7 +568,7 @@ class DaggerTrainer(BaseVLNCETrainer):
                         total=dataset.length // dataset.batch_size,
                         leave=False,
                         dynamic_ncols=True,
-                    ):
+                    ):  
                         (
                             observations_batch,
                             prev_actions_batch,
@@ -578,7 +576,7 @@ class DaggerTrainer(BaseVLNCETrainer):
                             corrected_actions_batch,
                             weights_batch,
                         ) = batch
-
+                  
                         observations_batch = {
                             k: v.to(
                                 device=self.device,

@@ -142,7 +142,6 @@ class BaseVLNCETrainer(BaseILTrainer):
         loss_accumulation_scalar: int = 1,
     ):
         T, N = corrected_actions.size()
-
         recurrent_hidden_states = torch.zeros(
             N,
             self.policy.net.num_recurrent_layers,
@@ -151,7 +150,6 @@ class BaseVLNCETrainer(BaseILTrainer):
         )
 
         AuxLosses.clear()
-
         distribution = self.policy.build_distribution(
             observations, recurrent_hidden_states, prev_actions, not_done_masks
         )
