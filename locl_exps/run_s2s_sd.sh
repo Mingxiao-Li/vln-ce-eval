@@ -10,6 +10,6 @@ EVAL_CKPT_PATH_DIR data/checkpoints/$model_name \
 RESULTS_DIR data/checkpoints/seq2seq/$model_name/evals\
 IL.DAGGER.lmdb_features_dir data/trajectories_dirs/$model_name/tra \
 TASK_CONFIG.DATASET.DATA_PATH data/datasets/annt/{split}/{split}.json.gz \
-
+IL.DAGGER.update_size 5000 \
 #\
 #2>&1 | tee $work_path/train.$now.log.out
