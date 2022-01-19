@@ -14,7 +14,7 @@ EVAL:
   EPISODE_COUNT: -1
 
 IL:
-  epochs: 20
+  epochs: 4
   batch_size: 5
   
 
@@ -23,7 +23,7 @@ IL:
       data/datasets/annt/{split}/{split}_gt.json.gz
 
   DAGGER:
-    iterations: 30
+    iterations: 10
     update_size: 5000
     p: 1.0
     preload_lmdb_features: False
