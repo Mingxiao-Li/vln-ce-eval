@@ -5,14 +5,14 @@ now=$(date +%s)
 PYTHONPATH=./ python -u $work_path/../run.py --exp-config $work_path/seq2seq_eval.yaml \
 --run-type eval \
 LOG_FILE $work_path/$model_name/train.log \
-NUM_ENVIRONMENTS 5 \
+NUM_ENVIRONMENTS 2 \
 TENSORBOARD_DIR data/tensorboard_dirs/$model_name \
 EVAL_CKPT_PATH_DIR data/checkpoints/$model_name \
-RESULTS_DIR data/checkpoints/$model_name/eval \
+RESULTS_DIR data/checkpoints/$model_name/eval/val_unseen \
 TASK_CONFIG.DATASET.DATA_PATH data/datasets/annt/{split}/{split}.json.gz \
 IL.RECOLLECT_TRAINER.gt_file "data/datasets/annt/{split}/{split}_gt.json.gz " \
 IL.DAGGER.lmdb_features_dir "data/trajectories_dirs/$model_name/tra.lmdb" \
 MODEL.STATE_ENCODER.hidden_size 256 \
 IL.DAGGER.update_size 3000 \
-EVAL.SPLIT val_seen \
+EVAL.SPLIT val_unseen \
 #\
