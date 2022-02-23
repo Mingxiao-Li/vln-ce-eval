@@ -216,7 +216,8 @@ class GridToSimAgent(Agent):
 
         back_step = 0
         is_search = False 
-        while self.path_finder.is_navigable(np.array(tmp_goal)):
+   
+        while not self.path_finder.is_navigable(np.array(tmp_goal)):
             index -= 1
             tmp_goal = sim_path[index]
             tmp_goal[1] = mid_value
@@ -226,7 +227,8 @@ class GridToSimAgent(Agent):
                 (back_step > 10 and not self.path_finder.is_navigable(np.array(tmp_goal))):
                 is_search = True 
                 break 
-        print(index)
+
+        #print(index)
         if is_search:
             if not self.path_finder.is_navigable(np.array(tmp_goal)):
                 #tmp_goal = self.path_finder.snap_point(np.array(tmp_goal)) 
