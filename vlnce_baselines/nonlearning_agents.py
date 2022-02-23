@@ -222,19 +222,22 @@ class GridToSimAgent(Agent):
             tmp_goal = sim_path[index]
             tmp_goal[1] = mid_value
             back_step += 1
-            
+ 
             if abs(index) >= len(sim_path) or \
                 (back_step > 10 and not self.path_finder.is_navigable(np.array(tmp_goal))):
                 is_search = True 
+                #ipdb.set_trace()
                 break 
 
         #print(index)
+        
         if is_search:
+            
             if not self.path_finder.is_navigable(np.array(tmp_goal)):
                 #tmp_goal = self.path_finder.snap_point(np.array(tmp_goal)) 
                 #if not tmp_goal == tmp_goal:
 
-                t_g = sim_path[-1].copy()
+                t_g = sim_path[index].copy()
 
                 x = np.linspace(-3.0, 3.0, 61)
                 y = np.linspace(-3.0, 3.0, 61)
@@ -247,18 +250,18 @@ class GridToSimAgent(Agent):
                 #candidatate_points = sorted(a, key=lambda k: k[0]*k[0] +k[1]*k[1]+k[2]*k[2] )
                 xv, yv = np.meshgrid(x,y)
                 a = list(zip(xv.flatten(), yv.flatten()))
-                candidatate_points = sorted(a, key=lambda k: k[0]*k[0] +k[1]*k[1] )
+                candidate_points = sorted(a, key=lambda k: k[0]*k[0] +k[1]*k[1] )
                 #while not self.path_finder.is_navigable(np.array(t_g)): 
                 
                 can_xy_points = []
-                for x,y in candidatate_points:
+                for x,y in candidate_points:
                     t_g[0] += x
                     t_g[2] += y 
                     can_xy_points.append(t_g)
                     if self.path_finder.is_navigable(np.array(t_g)):
                         break 
                     else:
-                        t_g = sim_path[-1].copy()
+                        t_g = sim_path[index].copy()
 
                 if not self.path_finder.is_navigable(np.array(t_g)):
                     for points in can_xy_points:
@@ -274,7 +277,7 @@ class GridToSimAgent(Agent):
                         self.is_nan = True
 
                 tmp_goal = t_g
-              
+        #ipdb.set_trace()
         act_index = self.shortest_path_follower.get_next_action(np.array(tmp_goal))
         if act_index is None:
             return {"action": self.actions[0]}, self.is_nan, episode_id
